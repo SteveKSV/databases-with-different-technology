@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers - Lab-5</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.1/examples/pricing/">
+</head>
+<body>
+    </header>
+    <h1>Teachers List: </h1>
+   
+    <form name="teacherForm">
+        <input type="hidden" name="id" value="0" />
+        <div class="form-group">
+            <label for="surname">Surname:</label>
+            <input class="form-control" name="surname" />
+        </div>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input class="form-control" name="name" />
+        </div>
+        <div class="form-group">
+            <label for="patronymic">Patronymic:</label>
+            <input class="form-control" name="patronymic" />
+        </div>
+        <div class="form-group">
+            <label for="degree">Degree:</label>
+            <input class="form-control" name="degree" />
+        </div>
+        <div class="form-group">
+            <label for="position">Position:</label>
+            <input class="form-control" name="position" />
+        </div>
+        <div class="panel-body">
+            <button type="submit" class="btn btn-sm btn-primary">Save</button>
+            <a id="reset" class="btn btn-sm btn-primary">Reset</a>
+        </div>
+    </form>
+
+    <table class="table table-condensed table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Surname</th>
+                <th>Name</th>
+                <th>Patronymic</th>
+                <th>Degree</th>
+                <th>Position</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    </form>
+
+    <script>
+        async function getTeachers() {
+            // отправляет запрос и получаем ответ
+            const response = await fetch("/api/teachers", {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            // если запрос прошел нормально
+            if (response.ok === true) {
+                // получаем данные
+                const teachers = await response.json();
+                let rows = document.querySelector("tbody"); 
+               
+                teachers.forEach(teacher => {
+                    // добавляем полученные элементы в таблицу
+                    rows.append(row(teacher));
+                });
+            }
+        }
+
+        // Получение одного пользователя
+        async function getTeacher(id) {
+            const response = await fetch("/api/teachers/" + id, {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const teacher = await response.json();
+                console.log(teacher);
+                const form = document.forms["teacherForm"];
+                form.elements["id"].value = teacher._id;
+                form.elements["surname"].value = teacher.Surname;
+                form.elements["name"].value = teacher.Name;
+                form.elements["patronymic"].value = teacher.Patronymic;
+                form.elements["degree"].value = teacher.Degree;
+                form.elements["position"].value = teacher.Position;
+            }
+        }
+
+        // Добавление пользователя
+        async function createTeacher(teacherSurname, teacherName, teacherPatronymic, teacherDegree, teacherPosition)
+        {
+            const response = await fetch("api/teachers", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    surname: teacherSurname,
+                    name: teacherName,
+                    patronymic: teacherPatronymic,
+                    degree: teacherDegree,
+                    position: teacherPosition
+                })
+            });
+            if (response.ok === true) {
+                const teacher = await response.json();
+                reset();
+                document.querySelector("tbody").append(row(teacher));
+            }
+        }
+
+        // Изменение пользователя
+        async function editTeacher(teacherId, teacherSurname, teacherName, teacherPatronymic, teacherDegree, teacherPosition)
+        {
+            const response = await fetch("api/teacher", {
+                method: "PUT",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    Id: teacherId,
+                    Surname: teacherSurname,
+                    Name: teacherName,
+                    Patronymic: teacherPatronymic,
+                    Degree: teacherDegree,
+                    Position: teacherPosition
+                })
+            });
+            if (response.ok === true) {
+                const teacher = await response.json();
+                reset();
+                document.querySelector(`tr[data-rowid='${teacher._id}']`).replaceWith(row(teacher));
+            }
+        }
+
+         // Удаление пользователя
+         async function deleteTeacher(id) {
+            const response = await fetch("/api/teachers/" + id, {
+                method: "DELETE",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const teacher = await response.json();
+                document.querySelector(`tr[data-rowid='${teacher._id}']`).remove();
+            }
+        }
+
+        // сброс формы
+        function reset() {
+            const form = document.forms["teacherForm"];
+            form.reset();
+            form.elements["id"].value = 0;
+        }
+
+        // создание строки для таблицы
+        function row(teacher) {
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", teacher._id);
+
+            const idTd = document.createElement("td");
+            idTd.append(teacher._id);
+            tr.append(idTd);
+
+            const surnameTd = document.createElement("td");
+            surnameTd.append(teacher.Surname);
+            tr.append(surnameTd);
+
+            const nameTd = document.createElement("td");
+            nameTd.append(teacher.Name);
+            tr.append(nameTd);
+
+            const patronymicTd = document.createElement("td");
+            patronymicTd.append(teacher.Patronymic);
+            tr.append(patronymicTd); 
+                
+            const degreeTd = document.createElement("td");
+            degreeTd.append(teacher.Degree);
+            tr.append(degreeTd);
+
+            const positionTd = document.createElement("td");
+            positionTd.append(teacher.Position);
+            tr.append(positionTd);
+
+            const linksTd = document.createElement("td");
+
+            const editLink = document.createElement("a");
+
+            editLink.setAttribute("data-id", teacher._id);
+            editLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            editLink.append("Edit");
+            editLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                getTeacher(teacher._id);
+            });
+
+            linksTd.append(editLink);
+
+            const removeLink = document.createElement("a");
+
+            removeLink.setAttribute("data-id", teacher._id);
+            removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            removeLink.append("Delete");
+            removeLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                deleteTeacher(teacher._id);
+            });
+
+            linksTd.append(removeLink);
+            tr.appendChild(linksTd);
+
+            return tr;
+        }
+
+        // сброс значений формы
+        document.getElementById("reset").addEventListener("click", e => {
+            e.preventDefault();
+            reset();
+        })
+
+        // отправка формы
+        document.forms["teacherForm"].addEventListener("submit", e => {
+            e.preventDefault();
+
+            const form = document.forms["teacherForm"];
+            const id = form.elements["id"].value;
+            const surname = form.elements["surname"].value;
+            const name = form.elements["name"].value;
+            const patronymic = form.elements["patronymic"].value;
+            const degree = form.elements["degree"].value;
+            const position = form.elements["position"].value;
+            if (id == 0)
+                createTeacher(surname, name, patronymic, degree, position);
+            else
+                editTeacher(id, surname, name, patronymic, degree, position);
+        });
+
+        // загрузка пользователей
+        getTeachers();
+    </script>
+</body>
+</html>

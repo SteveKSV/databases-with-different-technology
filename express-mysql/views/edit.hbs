@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редагування вчителів</title>
+    <meta charset="utf-8" />
+    <style>.field{width:180px;}</style>
+</head>
+<body>
+    <h1>Редагування вчителів</h1>
+     <form action="/edit" method="POST">
+        <input type="hidden" name="id" value="{{teacher.Id}}" />
+        <label>Прізвище</label><br>
+        <input name="surname" value="{{teacher.Surname}}"  class="field" /><br><br>
+        <label>Ім'я</label><br>
+        <input name="name" value="{{teacher.Name}}"  class="field" /><br><br>
+        <label>По батькові</label><br>
+        <input name="patronymic" value="{{teacher.Patronymic}}"  class="field" /><br><br>
+        <label>Ступінь</label><br>
+        <input name="degree" value="{{teacher.Degree}}"  class="field" /><br><br>
+        <label>Посада</label><br>
+        <input name="position" value="{{teacher.Position}}"  class="field" /><br><br>
+        <input type="submit" value="Отправить" />
+     </form>
+     <a href="/">До списку вчителів</a>
+</body>
+<html>

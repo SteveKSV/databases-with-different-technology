@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список пользователей</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <h1>Список вчителів</h1>
+    <p><a href="/create">Додати вчителя</a></p>
+    <table>
+        <tr>
+            <th>Прізвище</th>
+            <th>Ім'я</th>
+            <th>По батькові</th>
+            <th>Ступінь</th>
+            <th>Посада</th>
+            <th></th>
+        </tr>
+        {{#each teachers}}
+            <tr>
+                <td>{{this.Surname}}</td>
+                <td>{{this.Name}}</td>
+                <td>{{this.Patronymic}}</td>
+                <td>{{this.Degree}}</td>
+                <td>{{this.Position}}</td>
+                <td>
+                    <a href="/edit/{{this.Id}}">Редагувати</a>|
+                    <form action="delete/{{this.Id}}" method="POST" style="display:inline;">
+                        <input type="submit" value="Видалити" />
+                    </form>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</body>
+<html>
